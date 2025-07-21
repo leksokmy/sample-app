@@ -1,0 +1,20 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vote-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: vote
+    kind: Deployment
+  minReplicaCount: 2
+  maxReplicaCount: 5
+  triggers:
+  - type: cpu
+    metadata:
+      type: Utilization
+      value: "70"
+  - type: memory
+    metadata:
+      type: Utilization
+      value: "80"

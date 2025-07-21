@@ -1,0 +1,102 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluentd-config
+  namespace: logging
+data:
+  fluent.conf: |
+    # Input sources
+    <source>
+      @type tail
+      @id in_tail_container_logs
+      path /var/log/containers/*.log
+      pos_file /var/log/fluentd-containers.log.pos
+      tag kubernetes.*
+      read_from_head true
+      <parse>
+        @type json
+        time_format %Y-%m-%dT%H:%M:%S.%NZ
+      </parse>
+    </source>
+
+    # Capture kubelet logs
+    <source>
+      @type tail
+      @id in_tail_kubelet
+      path /var/log/kubelet.log
+      pos_file /var/log/fluentd-kubelet.log.pos
+      tag kubelet
+      <parse>
+        @type regexp
+        expression /^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[F|E|W|I|D]) (?<message>.*)$/
+        time_format %Y-%m-%dT%H:%M:%S.%N%:z
+      </parse>
+    </source>
+
+    # Capture kube-apiserver logs
+    <source>
+      @type tail
+      @id in_tail_kube_apiserver
+      path /var/log/kube-apiserver.log
+      pos_file /var/log/fluentd-kube-apiserver.log.pos
+      tag kube-apiserver
+      <parse>
+        @type regexp
+        expression /^(?<time>[^ ]+) (?<stream>stdout|stderr) (?<logtag>[F|E|W|I|D]) (?<message>.*)$/
+        time_format %Y-%m-%dT%H:%M:%S.%N%:z
+      </parse>
+    </source>
+
+    # Capture metrics from node-exporter if available
+    <source>
+      @type tail
+      @id in_tail_node_exporter
+      path /var/log/node-exporter.log
+      pos_file /var/log/fluentd-node-exporter.log.pos
+      tag node-metrics
+      <parse>
+        @type regexp
+        expression /^(?<time>[^ ]+) (?<metric>[^ ]+) (?<value>[^ ]+)$/
+        time_format %Y-%m-%dT%H:%M:%S.%N%:z
+      </parse>
+    </source>
+
+    # Kubernetes metadata filter
+    <filter kubernetes.**>
+      @type kubernetes_metadata
+      @id filter_kube_metadata
+    </filter>
+
+    # Enrich logs with Kubernetes metadata
+    <filter kubernetes.**>
+      @type record_transformer
+      <record>
+        kubernetes_namespace ${record["kubernetes"]["namespace_name"]}
+        kubernetes_pod_name ${record["kubernetes"]["pod_name"]}
+        kubernetes_container_name ${record["kubernetes"]["container_name"]}
+      </record>
+    </filter>
+
+    # Send all logs to Elasticsearch
+    <match **>
+      @type elasticsearch
+      @id out_es
+      @log_level info
+      include_tag_key true
+      host elasticsearch
+      port 9200
+      logstash_format true
+      <buffer>
+        @type file
+        path /var/log/fluentd-buffers/kubernetes.system.buffer
+        flush_mode interval
+        retry_type exponential_backoff
+        flush_thread_count 2
+        flush_interval 5s
+        retry_forever
+        retry_max_interval 30
+        chunk_limit_size 2M
+        queue_limit_length 8
+        overflow_action block
+      </buffer>
+    </match>

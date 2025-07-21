@@ -1,0 +1,18 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: vote-scaler
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: vote
+    kind: Deployment
+  minReplicaCount: 2  # Keep minimum 2 pods 
+  maxReplicaCount: 5 # Set maximum to 5 pods
+  pollingInterval: 15 # Check metrics every 15 seconds
+  cooldownPeriod: 300 # Wait 5 minutes after scaling before scaling again
+  triggers:
+  - type: cpu
+    metadata:
+      type: Utilization
+      value: "70"     # Set value as 70%

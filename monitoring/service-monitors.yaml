@@ -1,0 +1,71 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: db-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: db  # Matching your service label
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+  - port: db-service # Make sure this matches the actual port name in your service
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: redis-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: redis  # Matching your service label
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+  - port: redis-service  # Make sure this matches the actual port name in your service
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: result-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: result  # Matching your service label
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+  - port: result-service  # Make sure this matches the actual port name in your service
+    interval: 15s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: vote-monitor
+  namespace: monitoring
+  labels:
+    release: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: vote  # Matching your service label
+  namespaceSelector:
+    matchNames:
+      - default
+  endpoints:
+  - port: vote-service  # Make sure this matches the actual port name in your service
+    interval: 15s

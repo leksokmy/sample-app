@@ -1,0 +1,27 @@
+server:
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+  service:
+    type: LoadBalancer
+    # Remove nodePort references
+    # You can specify a port if needed
+    port: 9090
+  retention: 15d
+
+alertmanager:
+  persistentVolume:
+    enabled: true
+    size: 5Gi
+  service:
+    type: LoadBalancer
+    port: 9093
+
+prometheus-node-exporter:
+  hostRootfs: true
+
+prometheus-pushgateway:
+  enabled: true
+  service:
+    type: LoadBalancer
+    port: 9091
