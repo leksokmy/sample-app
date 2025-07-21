@@ -78,3 +78,11 @@ The folder of ```monitoring/``` is consisting resources (Kubernetes Manifest) to
 # About KEDA (Kubernetes-based Event Driven Autoscaler)
 KEDA stack is used to autoscale pods application.
 In this case there are resources in Kubernetes Manifest for creating resources scale based on the needed in CPU usage.
+
+
+### References
+This original vote app is in this repository:
+
+```
+https://github.com/dockersamples/example-voting-app
+```
