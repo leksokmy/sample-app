@@ -67,12 +67,13 @@ deal with them in Docker at a basic level.
 
 # About Logging
 In order to build good quality of Kubernetes env. Logging with EFK (Elasticsearch, Fluentd and Kibana) stack is recomended to implement.
-In the "logging/" folder there are useful resources in Kubernetes Manifest to create environment as containerized logging solutions.
-The centralized logging has purposes to obtain logs from pods and namespaces
+In the `logging/` folder there are useful resources in Kubernetes Manifest to create environment as containerized logging solutions.
+For deployment of logging stack there is README.md file inside the folder.
+The centralized logging has purposes to obtain logs from pods and namespaces.
 
 # About Monitoring
 Monitoring is used to monitor resources within the cluster. In this case the resources such as CPU usages and Memory are monitored by using Prometheus and Grafana.  
-The folder of "monitoring/" is consisting resources (Kubernetes Manifest) to build containerized stack of Prometheus and Grafana to collect data for resources monitoring.
+The folder of ```monitoring/``` is consisting resources (Kubernetes Manifest) to build containerized stack of Prometheus and Grafana to collect data for resources monitoring.
 
 # About KEDA (Kubernetes-based Event Driven Autoscaler)
 KEDA stack is used to autoscale pods application.
